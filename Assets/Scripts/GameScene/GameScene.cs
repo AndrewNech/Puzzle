@@ -15,6 +15,8 @@ public class GameScene : MonoBehaviour
 
     PuzzleCellSettings puzzleCellSettings;
 
+    Vector2 startPoint;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +32,8 @@ public class GameScene : MonoBehaviour
         puzzleCellSettings = new PuzzleCellSettings(width, height);
 
         puzzleCellImages = new GameObject[GameFieldSettings.width * GameFieldSettings.height];
+
+        startPoint = new Vector2((-Screen.width / 2 + puzzleCellSettings.width / 2), (Screen.height / 2 - puzzleCellSettings.height / 2));
     }
 
     void PrepareLevel()
@@ -38,17 +42,20 @@ public class GameScene : MonoBehaviour
         for (int i = 0; i < GameFieldSettings.width; i++)
             for (int j = 0; j < GameFieldSettings.height; j++)
             {
-                GameObject newObject = new GameObject("ObjectName"+cellCounter);
+                GameObject newObject = new GameObject("PuzzleCell"+cellCounter);
+                newObject.transform.SetParent(canvas.transform);
                 newObject.AddComponent<RectTransform>();
-                newObject.GetComponent<RectTransform>().sizeDelta = new Vector2(puzzleCellSettings.width, puzzleCellSettings.height);
+                newObject.GetComponent<RectTransform>().sizeDelta = new Vector3(puzzleCellSettings.width, puzzleCellSettings.height, 0);
+                newObject.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+                newObject.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+                newObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                newObject.GetComponent<RectTransform>().transform.localPosition = new Vector3(puzzleCellSettings.height*i, puzzleCellSettings.height * j, 0);
+
                 newObject.AddComponent<Image>();
 
                 puzzleCellImages[cellCounter] = newObject;
-                puzzleCellImages[cellCounter].transform.position = new Vector3(50 * i, 50*j, 0);
 
-                puzzleCellImages[cellCounter].transform.SetParent(canvas.transform);
-
-                //canvas.AddComponent<Image>(puzzleCellImages[cellCounter]);
+                newObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 
                 cellCounter++;
             }
@@ -89,8 +96,8 @@ public class GameScene : MonoBehaviour
 
 static public class GameFieldSettings
 {
-    public const int height = 5;
-    public const int width = 5;
+    public const int height = 3;
+    public const int width = 3;
 }
 
 public class PuzzleCellSettings
