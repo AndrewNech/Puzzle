@@ -17,6 +17,9 @@ public class GameScene : MonoBehaviour
 
     Vector2 startPoint;
 
+    int imageWidth;
+    int imageHeight;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,6 +37,9 @@ public class GameScene : MonoBehaviour
         puzzleCellImages = new GameObject[GameFieldSettings.width * GameFieldSettings.height];
 
         startPoint = new Vector2((-Screen.width / 2 + puzzleCellSettings.width / 2), (Screen.height / 2 - puzzleCellSettings.height / 2));
+
+        imageWidth = source.width / GameFieldSettings.width;
+        imageHeight = source.height / GameFieldSettings.height;
     }
 
     void PrepareLevel()
@@ -42,20 +48,22 @@ public class GameScene : MonoBehaviour
         for (int i = 0; i < GameFieldSettings.width; i++)
             for (int j = 0; j < GameFieldSettings.height; j++)
             {
-                GameObject newObject = new GameObject("PuzzleCell"+cellCounter);
+                GameObject newObject = new GameObject("PuzzleCell" + cellCounter);
                 newObject.transform.SetParent(canvas.transform);
                 newObject.AddComponent<RectTransform>();
-                newObject.GetComponent<RectTransform>().sizeDelta = new Vector3(puzzleCellSettings.width, puzzleCellSettings.height, 0);
-                newObject.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-                newObject.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
                 newObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                newObject.GetComponent<RectTransform>().transform.localPosition = new Vector3(puzzleCellSettings.height*i, puzzleCellSettings.height * j, 0);
+                newObject.GetComponent<RectTransform>().sizeDelta = new Vector3(puzzleCellSettings.width, puzzleCellSettings.height, 0);
+                newObject.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+                newObject.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+
+                newObject.GetComponent<RectTransform>().transform.localPosition += new Vector3(puzzleCellSettings.width / 2 + puzzleCellSettings.width * i, -(puzzleCellSettings.height / 2 + puzzleCellSettings.height * j), 0);
 
                 newObject.AddComponent<Image>();
 
-                puzzleCellImages[cellCounter] = newObject;
+                Sprite newSprite = Sprite.Create(source, new Rect(imageWidth * i, source.height - (imageHeight * (j + 1)), imageWidth, imageHeight), new Vector2(0.5f, 0.5f));
+                newObject.GetComponent<Image>().sprite = newSprite;
 
-                newObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                puzzleCellImages[cellCounter] = newObject;
 
                 cellCounter++;
             }
@@ -67,31 +75,6 @@ public class GameScene : MonoBehaviour
 
     }
 
-    //void BuildPieces()
-    //{
-    //    for (int i = 0; i < 3; i++)
-    //    {
-    //        for (int j = 0; j < 3; j++)
-    //        {
-    //            int index = i * 3 + j;
-    //            pieces[index] = new Texture2D(104, 104);
-    //            var pixels = source.GetPixels(104 * i, 104 * j, 104, 104);
-    //            pieces[index].SetPixels(pixels);
-    //            pieces[index].Apply();
-    //        }
-    //    }
-    //}
-
-    void FA1()
-    {
-        Rect rec = new Rect(0, 0, pieces[4].width, pieces[4].height);
-        Vector2 pivot = new Vector2(0.5f, 0.5f);
-
-        //result.sprite = Sprite.Create(pieces[4], rec, pivot);
-
-        Sprite newSprite = Sprite.Create(source, new Rect(200, 200, 200, 200), new Vector2(0.5f, 0.5f));
-        result.sprite = newSprite;
-    }
 }
 
 static public class GameFieldSettings
